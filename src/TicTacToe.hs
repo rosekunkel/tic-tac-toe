@@ -1,7 +1,5 @@
 module Main where 
 
-import Control.Monad
-
 import Types 
 import Checks 
 import Misc 
@@ -43,7 +41,7 @@ playRound p1 p2 score i = do
 
 play :: PlayerInfo -> PlayerInfo -> Board -> IO (Maybe PlayerInfo)
 play pi1@(PI p1 t1 _) pi2 board = do 
-  move <- playerMove p1 board
+  move <- playerMove p1 t1 board
   case put board t1 move of
     Nothing -> putStrLn "Invalid move." >> return (Just pi2)
     Just b  -> do putStrLn $ showBoard b

@@ -6,4 +6,4 @@ import Misc
 playerHuman :: String -> Player 
 playerHuman = Player humanMove
   where
-    humanMove _ = read <$> prompt "Write your move! (i,j) with 1<=i,j<=3 "
+    humanMove _ _ = read <$> prompt "Write your move! (i,j) with 1<=i,j<=3 "

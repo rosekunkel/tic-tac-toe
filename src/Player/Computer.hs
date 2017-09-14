@@ -9,10 +9,10 @@ playerComputer :: Player
 playerComputer = Player getRandomMove "Computer" 
 
 
-getRandomMove :: Board -> IO (Int, Int)
-getRandomMove b = do
+getRandomMove :: Tile -> Board -> IO (Int, Int)
+getRandomMove t b = do
     col <- randomRIO (1,3)
     row <- randomRIO (1,3)
     case b!!(row, col) of
         EmptyTile -> return (row, col)
-        _         -> getRandomMove b
+        _         -> getRandomMove t b

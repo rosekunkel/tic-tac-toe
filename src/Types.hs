@@ -9,7 +9,6 @@ import qualified Data.Maybe as M
 --- Board ---------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
-
 data Tile = EmptyTile | X | O 
   deriving (Eq)
 
@@ -33,11 +32,9 @@ put b t xy = case b!!xy of
 -------------------------------------------------------------------------------
 
 data Player = 
-  Player { playerMove :: Board -> IO Move
-         , playerName :: String 
+  Player { playerMove :: Tile -> Board -> IO Move
+         , playerName :: String
          }
-
-
 
 -------------------------------------------------------------------------------
 --- Score ---------------------------------------------------------------------
@@ -66,6 +63,9 @@ data PlayerInfo =
 instance Eq PlayerInfo where
     p1 == p2 = playerInfoInt p1 == playerInfoInt p2 
 
+instance Show Player where
+  show = playerName
+
 instance Show PlayerInfo where
   show pi 
     | pname /= "Computer" && pname /= "Human"
@@ -75,17 +75,16 @@ instance Show PlayerInfo where
     where pname = playerName $ playerInfoPlayer pi
 
 
-
-showTile :: Tile -> String
-showTile EmptyTile = "     "
-showTile X         = "  X  "
-showTile O         = "  O  "
+instance Show Tile where
+  show EmptyTile = "     "
+  show X         = "  X  "
+  show O         = "  O  "
 
 showBoard :: Board -> String
 showBoard b = let blist = boardAsList b
               in  unlines [Data.List.intercalate "|" row | row <- blist]
               where
-                boardAsList b = [[showTile (b!!(x,y)) | y <- [1,2,3]] | x <- [1,2,3]]
+                boardAsList b = [[show (b!!(x,y)) | y <- [1,2,3]] | x <- [1,2,3]]
 
 showTileNumbers :: String
 showTileNumbers  = (unlines
