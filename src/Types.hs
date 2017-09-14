@@ -42,6 +42,12 @@ data Player =
 
 type Score = [(PlayerInfo, Int)]
 
+showFinalScore :: Score -> String
+showFinalScore [(p1,i1),(p2,i2)]
+  = if i1 == i2 
+      then "Its a tie!" 
+      else ("The winner is " ++ show (if i1 < i2 then p2 else p1))
+
 showScore [(p1,i1),(p2,i2)] 
   = show p1 ++ " : " ++ show i1 ++ " VS. " ++ show p2 ++ " : " ++ show i2 
 showScore _ 
@@ -59,6 +65,8 @@ data PlayerInfo =
      , playerInfoTile   :: Tile
      , playerInfoInt    :: Int
      }
+
+type Winner = PlayerInfo
 
 instance Eq PlayerInfo where
     p1 == p2 = playerInfoInt p1 == playerInfoInt p2 

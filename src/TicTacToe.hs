@@ -9,16 +9,14 @@ import Player.Computer (playerComputer)
 
 player1, player2 :: Player
 player1 = playerComputer    
-player2 = playerHuman "Name" 
+player2 = playerHuman "Me!!!" 
 
 main :: IO ()
 main = do
     putStrLn "This is classic tic tac toe game."
-    rounds <- prompt "How many rounds should we play?"
-    [(p1,i1),(p2,i2)] <- playRounds (read rounds) player1 player2 
-    if i1 == i2 
-      then putStrLn "Its a tie!" 
-      else putStrLn ("The winner is " ++ show (if i1 < i2 then p2 else p1))
+    rounds  <- prompt "How many rounds should we play?"
+    score   <- playRounds (read rounds) player1 player2 
+    putStrLn $ showFinalScore score 
 
 
 playRounds :: Int -> Player -> Player -> IO Score
@@ -39,7 +37,7 @@ playRound p1 p2 score i = do
       Nothing -> putStrLn "Its a tie!\n\n" >> return score 
 
 
-play :: PlayerInfo -> PlayerInfo -> Board -> IO (Maybe PlayerInfo)
+play :: PlayerInfo -> PlayerInfo -> Board -> IO (Maybe Winner)
 play pi1@(PI p1 t1 _) pi2 board = do 
   move <- playerMove p1 t1 board
   case put board t1 move of
