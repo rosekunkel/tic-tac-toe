@@ -8,8 +8,8 @@ import Player.Human    (playerHuman   )
 import Player.Computer (playerComputer)
 
 player1, player2 :: Player
-player1 = playerComputer    
-player2 = playerHuman "Me!!!" 
+player1 = playerHuman "Me!"    
+player2 = playerComputer
 
 main :: IO ()
 main = do
@@ -39,8 +39,8 @@ playRound p1 p2 score i = do
 
 play :: PlayerInfo -> PlayerInfo -> Board -> IO (Maybe Winner)
 play pi1@(PI p1 t1 _) pi2 board = do 
-  move <- playerMove p1 t1 board
-  case put board t1 move of
+  move <- (playerMove p1) t1 board
+  case putMaybe board t1 move of
     Nothing -> putStrLn "Invalid move." >> return (Just pi2)
     Just b  -> do putStrLn $ showBoard b
                   if tileWins b t1

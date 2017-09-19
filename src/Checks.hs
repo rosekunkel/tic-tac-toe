@@ -17,3 +17,15 @@ tileWins b t =
 
 checkFull :: Board -> Bool
 checkFull b = all (\row -> all (\col -> b!!(row, col) /= EmptyTile) [1..3]) [1..3]
+
+
+scoreBoard :: Tile -> Board -> Maybe Int 
+scoreBoard tile board 
+  | tileWins board tile 
+  = Just 1
+  | tileWins board (flipTile tile)   
+  = Just (-1) 
+  | checkFull board           
+  = Just 0
+  | otherwise
+  = Nothing 

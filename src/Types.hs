@@ -9,8 +9,14 @@ import qualified Data.Maybe as M
 --- Board ---------------------------------------------------------------------
 -------------------------------------------------------------------------------
 
+
 data Tile = EmptyTile | X | O 
   deriving (Eq)
+
+flipTile :: Tile -> Tile
+flipTile X = O 
+flipTile O = X 
+flipTile _ = EmptyTile
 
 type Move   = (Int,Int)
 
@@ -22,8 +28,14 @@ b!!ij = M.fromMaybe EmptyTile (lookup ij b)
 emptyBoard :: Board
 emptyBoard = [((x,y), EmptyTile) | x <- [1..3], y <- [1..3]]
 
-put :: Board -> Tile -> (Int,Int) -> Maybe Board
-put b t xy = case b!!xy of
+validMoves :: Board -> [Move]
+validMoves board  = [ij | (ij, EmptyTile) <- board]
+
+put :: Board -> Tile -> Move -> Board
+put b t move = M.fromJust $ putMaybe b t move
+
+putMaybe :: Board -> Tile -> Move -> Maybe Board
+putMaybe b t xy = case b!!xy of
                EmptyTile -> Just $ map (\(ij,tij) -> if ij == xy then (ij,t) else (ij,tij)) b 
                _         -> Nothing
 
@@ -34,7 +46,7 @@ put b t xy = case b!!xy of
 data Player = 
   Player { playerMove :: Tile -> Board -> IO Move
          , playerName :: String
-         }
+         } 
 
 -------------------------------------------------------------------------------
 --- Score ---------------------------------------------------------------------
