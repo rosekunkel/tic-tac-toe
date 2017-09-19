@@ -19,7 +19,7 @@ executable tic-tac-toe
                        Player.Computer, 
                        Player.Human, 
                        Player.MinMax,
-                       Player.Max
+                       Player.BestNext
 
   default-language:    Haskell2010
 
