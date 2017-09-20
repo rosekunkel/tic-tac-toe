@@ -1,10 +1,10 @@
-# tic-tac-toe
+# tic-tac-toe and gomoku
 Yet another tic-tac-toe game, implemented in Haskell.
 
 # How to build: 
 
 ```
 git clone https://github.com/nikivazou/tic-tac-toe.git
-cd tic-tac-toe
+cd tic-tac-toe/classic
 stack install
 ```
