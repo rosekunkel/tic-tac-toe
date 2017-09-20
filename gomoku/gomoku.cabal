@@ -18,7 +18,6 @@ executable gomoku
                        Misc,
                        Player.Computer, 
                        Player.Human, 
-                       Player.MinMax,
                        Player.BestNext
 
   default-language:    Haskell2010
