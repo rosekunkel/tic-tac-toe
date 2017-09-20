@@ -22,5 +22,6 @@ addons:
     - ghc-8.0.2
 
 script:
+  - cd classic 
   - stack build 
   - stack test
