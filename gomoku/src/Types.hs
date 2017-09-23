@@ -28,8 +28,8 @@ dim :: Dimentions
 dim = Dim 15 15 5 
 
 
-(!!) :: Board -> Move -> Tile
-b!!ij = M.fromMaybe EmptyTile (lookup ij b) 
+(??) :: Board -> Move -> Tile
+b??ij = M.fromMaybe EmptyTile (lookup ij b) 
 
 emptyBoard :: Board
 emptyBoard = [((x,y), EmptyTile) | x <- [1..(dimN dim)], y <- [1..(dimM dim)]]
@@ -41,7 +41,7 @@ put :: Board -> Tile -> Move -> Board
 put b t move = M.fromJust $ putMaybe b t move
 
 putMaybe :: Board -> Tile -> Move -> Maybe Board
-putMaybe b t xy = case b!!xy of
+putMaybe b t xy = case b??xy of
                EmptyTile -> Just $ map (\(ij,tij) -> if ij == xy then (ij,t) else (ij,tij)) b 
                _         -> Nothing
 
@@ -117,7 +117,7 @@ showBoard :: Board -> String
 showBoard b = let blist = boardAsList b
               in  unlines [Data.List.intercalate "|" row | row <- blist]
               where
-                boardAsList b = [[show (b!!(x,y)) | y <- [1..dimM dim]] | x <- [1..dimN dim]]
+                boardAsList b = [[show (b??(x,y)) | y <- [1..dimM dim]] | x <- [1..dimN dim]]
 
 showTileNumbers :: String
 showTileNumbers  = (unlines
