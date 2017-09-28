@@ -3,25 +3,40 @@ module Main where
 import Types 
 import Checks 
 import Misc 
+import Players 
 
 import Player.BestNext    (playerBestNext )
 import Player.Human       (playerHuman    )
 import Player.Computer    (playerComputer )
 
+import System.Exit
+import System.Environment
 import Control.Timeout
 import Data.Time.Units (Second)
-
-player1, player2 :: Player
-player1 = playerBestNext
-player2 = playerComputer
+import Data.List  (lookup)
 
 main :: IO ()
 main = do
+    (player1,player2) <-  getArgs >>= getPlayers
     putStrLn "This is the Gomoku game."
     rounds  <- prompt "How many rounds should we play?"
-    score   <- playRounds (read rounds) player1 player2 
+    score   <- playRounds (read rounds) player1  player2
     putStrLn $ showFinalScore score 
 
+
+getPlayers :: [String] -> IO (Player, Player)
+getPlayers input = 
+  case input of 
+    (n1:n2:_) -> (,) <$> lookupPlayer n1 <*> lookupPlayer n2 
+    _         -> putStrLn "Give at least two player names" >> exitFailure
+
+lookupPlayer :: String -> IO Player
+lookupPlayer name =
+  case lookup name players of 
+    Just p -> return p 
+    _      -> err 
+  where
+    err = putStrLn ("Player " ++ show name ++ "does not exists.") >> exitFailure
 
 playRounds :: Int -> Player -> Player -> IO Score
 playRounds rounds player1 player2 = 
