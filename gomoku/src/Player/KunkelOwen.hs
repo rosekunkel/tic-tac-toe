@@ -11,10 +11,10 @@ playerKunkelOwen :: Player
 playerKunkelOwen = Player computeMove "KunkelOwen"
 
 maxDepth :: Int
-maxDepth = 2
+maxDepth = 1
 
 computeMove :: Tile -> Board -> IO Move
-computeMove tile board = return $ minimax tile board (\_ _ -> 0)
+computeMove tile board = return $ minimax tile board testHeuristic
 
 data Value = Loss | Draw | Heuristic Int | Win
   deriving (Eq, Ord)
@@ -59,3 +59,28 @@ minimax tile board heuristic = getMove $ maximizingMove maxDepth board
                                   put board (flipTile tile) move)) <$>
        validMoves board)
       (valueToScoredMove <$> maybeScore board depth)
+
+testHeuristic :: Tile -> Board -> Int
+testHeuristic tile board = (valueBoard tile board) - (valueBoard (flipTile tile) board)
+  where
+    valueBoard tile board = foldl (+) 0 (map (valueLine tile board) allLines)
+    valueLine tile board moves = evaluateCount $
+      foldl (+) 0 (map (valueMove tile board) moves)
+    valueMove tile board move = case (board ?? move) of
+      EmptyTile -> 0
+      currentTile -> if currentTile == tile then 1 else -dimK dim
+    evaluateCount count
+      | count > 0 = (count * (count+1)) -- Arbitrary triangular number sequence of scores.
+      | otherwise = 0
+      
+allLines :: [[Move]]
+allLines = getRows ++ getColumns ++ getDiagonals1 ++ getDiagonals2
+  where
+    getRows = [[(row,col+k) | k <- [0..dimK dim - 1]] | row <- [1..dimM dim], col <- [1..dimN dim - dimK dim + 1]]
+    getColumns = [[(row+k,col) | k <- [0..dimK dim - 1]] | row <- [1..dimM dim - dimK dim + 1], col <- [1..dimN dim]]
+    getDiagonals1 = [[(row+k,col+k) | k <- [0..dimK dim - 1]] | row <- [1..dimM dim - dimK dim + 1], col <- [1..dimN dim - dimK dim + 1]]
+    getDiagonals2 = [[(row+k,col-k) | k <- [0..dimK dim - 1]] | row <- [1..dimM dim - dimK dim + 1], col <- [dimK dim..dimN dim]]
+
+
+
+
