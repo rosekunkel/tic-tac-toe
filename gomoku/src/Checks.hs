@@ -13,14 +13,16 @@ tileWins :: Board -> Tile -> Bool
 tileWins b t = 
    any (\col -> any (\row -> all (\k -> b??(row,col+k)   == t) [0..dimK dim-1]) [1..dimM dim]) [1..dimN dim] ||
    any (\col -> any (\row -> all (\k -> b??(row+k,col)   == t) [0..dimK dim-1]) [1..dimM dim]) [1..dimN dim] ||
-   any (\col -> any (\row -> all (\k -> b??(row+k,col+k) == t) [0..dimK dim-1]) [1..dimM dim]) [1..dimN dim] 
+   any (\col -> any (\row -> all (\k -> b??(row+k,col+k) == t) [0..dimK dim-1]) [1..dimM dim]) [1..dimN dim] ||
+   any (\col -> any (\row -> all (\k -> b??(row-k,col+k) == t) [0..dimK dim-1]) [1..dimM dim]) [1..dimN dim] 
 
 
 winningMoves :: Board -> Tile -> [Move]
 winningMoves b t = 
    concatMap (\col -> concatMap (\row -> if all (\k -> b??(row,col+k)   == t) [0..dimK dim-1] then [(row,col+k)   | k <- [0..dimK dim-1]] else []) [1..dimM dim]) [1..dimN dim] ++
    concatMap (\col -> concatMap (\row -> if all (\k -> b??(row+k,col)   == t) [0..dimK dim-1] then [(row+k,col)   | k <- [0..dimK dim-1]] else []) [1..dimM dim]) [1..dimN dim] ++
-   concatMap (\col -> concatMap (\row -> if all (\k -> b??(row+k,col+k) == t) [0..dimK dim-1] then [(row+k,col+k) | k <- [0..dimK dim-1]] else []) [1..dimM dim]) [1..dimN dim] 
+   concatMap (\col -> concatMap (\row -> if all (\k -> b??(row+k,col+k) == t) [0..dimK dim-1] then [(row+k,col+k) | k <- [0..dimK dim-1]] else []) [1..dimM dim]) [1..dimN dim] ++
+   concatMap (\col -> concatMap (\row -> if all (\k -> b??(row-k,col+k) == t) [0..dimK dim-1] then [(row-k,col+k) | k <- [0..dimK dim-1]] else []) [1..dimM dim]) [1..dimN dim] 
 
 
 showWinningBoard :: Board -> Tile -> String 
