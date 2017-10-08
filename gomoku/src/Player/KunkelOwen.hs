@@ -12,9 +12,9 @@ playerKunkelOwen :: Player
 playerKunkelOwen = Player computeMove "KunkelOwen"
 
 computeMove :: Tile -> Board -> IO Move
-computeMove tile board = fromTimed (return $ anyValidMove board) $
-  (withTimeout 20000000 (return $ minimaxToDepth 2)) <>
-  (withTimeout 9500000 (return $ minimaxToDepth 1))
+computeMove tile board = fromTimed (return $! anyValidMove board) $
+  (withTimeout 20000000 (return $! minimaxToDepth 2)) <>
+  (withTimeout 9500000 (return $! minimaxToDepth 1))
   where
     minimaxToDepth depth = minimax depth tile (scoredBoardFromBoard board) heuristicFromScoredBoard
 
