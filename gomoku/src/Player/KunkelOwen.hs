@@ -72,10 +72,6 @@ heuristicFromBoard tile board = (valueBoard tile board) - (valueBoard (flipTile 
     valueMove tile board move = case (board ?? move) of
       EmptyTile -> 0
       currentTile -> if currentTile == tile then 1 else -dimK dim
-    evaluateCount count
-      | count >= dimK dim = 99999999
-      | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
-      | otherwise = 0
 
 filterKeepOne :: (a -> Bool) -> [a] -> [a]
 filterKeepOne pred (x:xs) = case filter pred (x:xs) of
