@@ -50,15 +50,30 @@ minimax tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   minimizingMove (depth - 1) $
                                   put board tile move)) <$>
-       validMoves board)
+       (traceShowId $
+        filterKeepOne (isUsefulMove board) $
+        validMoves board))
       (valueToScoredMove <$> maybeScore board depth)
     minimizingMove depth board = fromMaybe
       (minimum $
        (\move -> ScoredMove move (getValue $
                                   maximizingMove (depth - 1) $
                                   put board (flipTile tile) move)) <$>
-       validMoves board)
+       (traceShowId $
+        filterKeepOne (isUsefulMove board) $
+        validMoves board))
       (valueToScoredMove <$> maybeScore board depth)
+
+filterKeepOne :: (a -> Bool) -> [a] -> [a]
+filterKeepOne pred (x:xs) = case filter pred (x:xs) of
+  [] -> [x]
+  ys -> ys
+
+isUsefulMove :: Board -> Move -> Bool
+isUsefulMove board (i, j) = any (/= EmptyTile) $ catMaybes $ (flip lookup) board <$> mooreNeighborhood (i, j)
+
+mooreNeighborhood :: Move -> [Move]
+mooreNeighborhood (i, j) = [(i', j') | i' <- [i - 1.. i + 1], j' <- [j - 1..j + 1]]
 
 testHeuristic :: Tile -> Board -> Int
 testHeuristic tile board = (valueBoard tile board) - (valueBoard (flipTile tile) board)
