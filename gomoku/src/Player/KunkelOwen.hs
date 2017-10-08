@@ -109,11 +109,16 @@ scoreChange board placedTile move = (valueBoardChange X board) - (valueBoardChan
     valueMove scoreTile board move = case (board ?? move) of
       EmptyTile -> 0
       currentTile -> if currentTile == scoreTile then 1 else -dimK dim
-    evaluateCount count
-      | count >= dimK dim = 99999999
-      | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
-      | otherwise = 0
 
+evaluateCount :: Int -> Int
+evaluateCount count
+  | count >= 5 = 99999999
+  | count == 4 = 30
+  | count == 3 = 8
+  | count == 2 = 3
+  | count == 1 = 1
+  | otherwise = 0
+      
 restrictedLines :: Move -> [[Move]]
 restrictedLines (fixedRow, fixedCol) = getRows ++ getColumns ++ getDiagonals1 ++ getDiagonals2
   where
