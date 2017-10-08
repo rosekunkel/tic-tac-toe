@@ -2,7 +2,6 @@ module Player.KunkelOwen (playerKunkelOwen) where
 
 import Control.Applicative
 import Data.Maybe
-import Debug.Trace
 
 import Types
 import Checks
@@ -50,8 +49,7 @@ minimax tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   minimizingMove (depth - 1) $
                                   put board tile move)) <$>
-       (traceShowId $
-        filterKeepOne (isUsefulMove board) $
+       (filterKeepOne (isUsefulMove board) $
         validMoves board))
       (valueToScoredMove <$> maybeScore board depth)
     minimizingMove depth board = fromMaybe
@@ -59,8 +57,7 @@ minimax tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   maximizingMove (depth - 1) $
                                   put board (flipTile tile) move)) <$>
-       (traceShowId $
-        filterKeepOne (isUsefulMove board) $
+       (filterKeepOne (isUsefulMove board) $
         validMoves board))
       (valueToScoredMove <$> maybeScore board depth)
 
