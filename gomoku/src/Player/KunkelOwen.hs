@@ -2,7 +2,6 @@ module Player.KunkelOwen (playerKunkelOwen) where
 
 import Control.Applicative
 import Data.Maybe
-import Debug.Trace
 
 import Types
 import Checks
@@ -52,14 +51,16 @@ minimax tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   minimizingMove (depth - 1) $
                                   putScored board tile move)) <$>
-       validMoves (fst board))
+       (filterKeepOne (isUsefulMove (fst board)) $
+        validMoves (fst board)))
       (valueToScoredMove <$> maybeScore board depth)
     minimizingMove depth board = fromMaybe
       (minimum $
        (\move -> ScoredMove move (getValue $
                                   maximizingMove (depth - 1) $
                                   putScored board (flipTile tile) move)) <$>
-       validMoves (fst board))
+       (filterKeepOne (isUsefulMove (fst board)) $
+        validMoves (fst board)))
       (valueToScoredMove <$> maybeScore board depth)
 
 heuristicFromBoard :: Tile -> Board -> Int
@@ -72,8 +73,19 @@ heuristicFromBoard tile board = (valueBoard tile board) - (valueBoard (flipTile 
       EmptyTile -> 0
       currentTile -> if currentTile == tile then 1 else -dimK dim
     evaluateCount count
-      | count > 0 = (count * (count+1)) -- Arbitrary triangular number sequence of scores.
+      | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
       | otherwise = 0
+
+filterKeepOne :: (a -> Bool) -> [a] -> [a]
+filterKeepOne pred (x:xs) = case filter pred (x:xs) of
+  [] -> [x]
+  ys -> ys
+
+isUsefulMove :: Board -> Move -> Bool
+isUsefulMove board (i, j) = any (/= EmptyTile) $ catMaybes $ (flip lookup) board <$> mooreNeighborhood (i, j)
+
+mooreNeighborhood :: Move -> [Move]
+mooreNeighborhood (i, j) = [(i', j') | i' <- [i - 1.. i + 1], j' <- [j - 1..j + 1]]
       
 heuristicFromScoredBoard :: Tile -> ScoredBoard -> Int
 heuristicFromScoredBoard tile (board, score) = case tile of
@@ -98,7 +110,7 @@ scoreChange board placedTile move = (valueBoardChange X board) - (valueBoardChan
       currentTile -> if currentTile == scoreTile then 1 else -dimK dim
     evaluateCount count
       | count >= dimK dim = 9999999999
-      | count > 0 = (2 ^ count) -- Arbitrary triangular number sequence of scores.
+      | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
       | otherwise = 0
 
 restrictedLines :: Move -> [[Move]]
