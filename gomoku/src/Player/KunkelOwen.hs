@@ -2,6 +2,8 @@ module Player.KunkelOwen (playerKunkelOwen) where
 
 import Control.Applicative
 import Data.Maybe
+import Data.Monoid
+import System.Timeout
 
 import Types
 import Checks
@@ -9,11 +11,35 @@ import Checks
 playerKunkelOwen :: Player
 playerKunkelOwen = Player computeMove "KunkelOwen"
 
-maxDepth :: Int
-maxDepth = 2
-
 computeMove :: Tile -> Board -> IO Move
-computeMove tile board = return $ minimax tile (scoredBoardFromBoard board) heuristicFromScoredBoard
+computeMove tile board = fromTimed (return $ anyValidMove board) $
+  (withTimeout 20000000 (return $ minimaxToDepth 2)) <>
+  (withTimeout 9500000 (return $ minimaxToDepth 1))
+  where
+    minimaxToDepth depth = minimax depth tile (scoredBoardFromBoard board) heuristicFromScoredBoard
+
+data Timed a = Timed
+  { getComputation :: IO a
+  , getTimeout :: Int
+  }
+
+instance Monoid (Timed a) where
+  mempty = Timed (return undefined) 0
+  mappend x y = Timed
+    { getComputation = do
+        maybeX <- timeout (getTimeout x) (getComputation x)
+        fromMaybe (getComputation y) $ fmap return maybeX
+    , getTimeout = getTimeout x + getTimeout y
+    }
+
+withTimeout :: Int -> IO a -> Timed a
+withTimeout timeout computation = Timed computation timeout
+
+fromTimed :: IO a -> Timed a -> IO a
+fromTimed defaultComputation timed = getComputation
+  (timed <> (Timed defaultComputation (-1)))
+
+anyValidMove board = head $ validMoves board
 
 data Value = Loss | Draw | Heuristic Int | Win
   deriving (Eq, Ord)
@@ -40,8 +66,8 @@ scoreToValue 1 = Win
 valueToScoredMove :: Value -> ScoredMove
 valueToScoredMove v = ScoredMove undefined v
 
-minimax :: Tile -> ScoredBoard -> (Tile -> ScoredBoard -> Int) -> Move
-minimax tile board heuristic = getMove $ maximizingMove maxDepth board
+minimax :: Int -> Tile -> ScoredBoard -> (Tile -> ScoredBoard -> Int) -> Move
+minimax maxDepth tile board heuristic = getMove $ maximizingMove maxDepth board
   where
     maybeScore board depth =
       justIf (depth <= 0) (Heuristic (heuristic tile board)) <|>
