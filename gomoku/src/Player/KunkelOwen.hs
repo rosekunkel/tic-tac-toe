@@ -8,6 +8,9 @@ import System.Timeout
 import Types
 import Checks
 
+teamMembers :: String
+teamMembers = "Patrick Owen and Will Kunkel"
+
 playerKunkelOwen :: Player
 playerKunkelOwen = Player computeMove "KunkelOwen"
 
