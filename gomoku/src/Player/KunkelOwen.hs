@@ -73,6 +73,7 @@ heuristicFromBoard tile board = (valueBoard tile board) - (valueBoard (flipTile 
       EmptyTile -> 0
       currentTile -> if currentTile == tile then 1 else -dimK dim
     evaluateCount count
+      | count >= dimK dim = 99999999
       | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
       | otherwise = 0
 
@@ -109,7 +110,7 @@ scoreChange board placedTile move = (valueBoardChange X board) - (valueBoardChan
       EmptyTile -> 0
       currentTile -> if currentTile == scoreTile then 1 else -dimK dim
     evaluateCount count
-      | count >= dimK dim = 9999999999
+      | count >= dimK dim = 99999999
       | count > 0 = (2 ^ count) -- Arbitrary exponential sequnce of scores
       | otherwise = 0
 
