@@ -80,7 +80,7 @@ minimax maxDepth tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   minimizingMove (depth - 1) $
                                   putScored board tile move)) <$>
-       (filterKeepOne (isUsefulMove (fst board)) $
+       (filterIfAny (isUsefulMove (fst board)) $
         validMoves (fst board)))
       (valueToScoredMove <$> maybeScore board depth)
     minimizingMove depth board = fromMaybe
@@ -88,7 +88,7 @@ minimax maxDepth tile board heuristic = getMove $ maximizingMove maxDepth board
        (\move -> ScoredMove move (getValue $
                                   maximizingMove (depth - 1) $
                                   putScored board (flipTile tile) move)) <$>
-       (filterKeepOne (isUsefulMove (fst board)) $
+       (filterIfAny (isUsefulMove (fst board)) $
         validMoves (fst board)))
       (valueToScoredMove <$> maybeScore board depth)
 
@@ -102,9 +102,9 @@ heuristicFromBoard tile board = (valueBoard tile board) - (valueBoard (flipTile 
       EmptyTile -> 0
       currentTile -> if currentTile == tile then 1 else -dimK dim
 
-filterKeepOne :: (a -> Bool) -> [a] -> [a]
-filterKeepOne pred (x:xs) = case filter pred (x:xs) of
-  [] -> [x]
+filterIfAny :: (a -> Bool) -> [a] -> [a]
+filterIfAny pred xs = case filter pred xs of
+  [] -> xs
   ys -> ys
 
 isUsefulMove :: Board -> Move -> Bool
@@ -138,7 +138,7 @@ scoreChange board placedTile move = (valueBoardChange X board) - (valueBoardChan
 evaluateCount :: Int -> Int
 evaluateCount count
   | count >= 5 = 99999999
-  | count == 4 = 30
+  | count == 4 = 40
   | count == 3 = 8
   | count == 2 = 3
   | count == 1 = 1
